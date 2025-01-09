@@ -1,60 +1,58 @@
-# Projet de fin de module NoSQL
+#1. Comment installer et lancer le projet:
 
-Pour ce projet, vous allez créer une petite API qui va servir de backend à une plateforme d'apprentissage en ligne. J'ai préparé la structure du projet avec une organisation professionnelle du code, comme vous pouvez le constater dans ce dépôt Github.
+            1.Comment installer et lancer le projet
+               #Cloner le projet
+               git clone https://github.com/pr-daaif/learning-platform-template.git
 
-Commençons par l'organisation pratique :
+               #Renommez le dépôt origin
+               cd learning-platform-template
+               git remote remove origin
 
-1. Création de votre dépôt :
-   - Sur Github.com
-   - Créez un nouveau dépôt public
-   - Nommez-le "learning-platform-nosql"
-   - Ne l'initialisez pas avec un README pour le moment
+               # Ajoutez votre dépôt comme nouvelle origine
+               git remote add origin https://github.com/[votre-compte]/learning-platform-nosql
 
-2. Configuration de votre environnement local :
-   ```bash
-   # Clonez mon dépôt template (ce dépôt)
-   git clone https://github.com/pr-daaif/learning-platform-template
-   
-   # Renommez le dépôt origin
-   cd learning-platform-template
-   git remote remove origin
-   
-   # Ajoutez votre dépôt comme nouvelle origine
-   git remote add origin https://github.com/[votre-compte]/learning-platform-nosql
-   
-   # Poussez le code vers votre dépôt
-   git push -u origin main
-   ```
+               # Poussez le code vers votre dépôt
+               git push -u origin main
 
-3. Installation des dépendances :
-   ```bash
-   npm install
-   ```
+            2. Installer les dépendances avec
+               `npm install`
 
-Je vous propose une structure de code qui suit les bonnes pratiques de développement. Vous trouverez dans le code des commentaires avec des **questions qui vous guideront dans votre réflexion**. Ces questions sont importantes car elles vous aideront à comprendre les choix d'architecture.
+            3. Lancer le projet avec
+               `npm start`
 
-### Aspects professionnels à noter :
-- Utilisation des variables d'environnement pour la configuration
-- Séparation claire des responsabilités (routes, contrôleurs, services)
-- Gestion propre des connexions aux bases de données
-- Organisation modulaire du code
-- Gestion des erreurs et des cas limites
-- Documentation du code
+#2. La structure du projet
+Le projet est composé de 3 dossiers principaux :
 
-### Pour le rendu, voici ce que j'attends :
-1. Un dépôt public sur Github avec un historique de commits clair
-2. Un README.md qui explique :
-   - Comment installer et lancer le projet
-   - La structure du projet
-   - Les choix techniques que vous avez faits
-   - Les réponses aux questions posées dans les commentaires
-3. Le code complété avec tous les TODOs implémentés
+            - env : contient les variables d'environnement
+            -package.json : contient les packages utilisés dans le projet
+            - src :
 
-### Je vous conseille de procéder étape par étape :
-1. Commencez par lire et comprendre la structure du projet
-2. Répondez aux questions des commentaires dans le README
-3. Implémentez progressivement les TODOs
-4. Testez chaque fonctionnalité au fur et à mesure
-5. Documentez vos choix et vos réflexions en ajoutant des copies d'écrans à votre fichier README.md
+                        - controllers : contient les controlleurs de l'application
+                                 -courseController.js : controlleur de la route /course
 
-#### Bon courage
+
+                        - routes : contient les routes de l'application
+                                 -courseRoutes.js : route /course
+                        - services : contient les services de l'application
+                                 -mongoService.js : service de connexion à la base de données
+                                 -redisService.js : service de connexion à redis(cache)
+
+            - app.js: fichier principal de l'application
+
+3. Les choix techniques que vous avez faits
+4. Les réponses aux questions posées dans les commentaires
+
+   4.1 les questions de db.js 
+
+         Question:
+               Pourquoi créer un module séparé pour les connexions aux bases de données ?
+         Réponse:
+               on peut cree tous les connexions dans un seul fichier mais il est plus propre 
+               de les separer pour une meilleur lisibilite et facilite de maintenance
+               aussi l'operation de connexion peut etre coteuse en performance lorsqu'on cree une connexion a chaque fois
+               Si on utilise des connexions multiples on va charger notre processeur en notr memoire .
+
+         Question :
+            Comment gérer proprement la fermeture des connexions ?
+         Réponse : 
+            On doit fermer les connexions lorsqu'on a fini de les utiliser pour liberer les ressources(memorie,cpu)
