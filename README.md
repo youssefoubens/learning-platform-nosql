@@ -39,20 +39,59 @@ Le projet est composé de 3 dossiers principaux :
 
             - app.js: fichier principal de l'application
 
-3. Les choix techniques que vous avez faits
-4. Les réponses aux questions posées dans les commentaires
+#3. Les choix techniques que vous avez faits
+#4. Les réponses aux questions posées dans les commentaires
 
-   4.1 les questions de db.js 
+    4.1 les questions de db.js
+
+          Question:
+             Pourquoi créer un module séparé pour les connexions aux bases de données ?
+          Réponse:
+             on peut cree tous les connexions dans un seul fichier mais il est plus propre
+             de les separer pour une meilleur lisibilite et facilite de maintenance
+             aussi l'operation de connexion peut etre coteuse en performance lorsqu'on cree une connexion a chaque fois
+             Si on utilise des connexions multiples on va charger notre processeur en notr memoire .
+
+          Question :
+             Comment gérer proprement la fermeture des connexions ?
+          Réponse :
+             On doit fermer les connexions lorsqu'on a fini de les utiliser pour liberer les ressources(memorie,cpu)
+
+    4.2 les questions de env.js.
+
+          Question:
+             Pourquoi est-il important de valider les variables d'environnement au démarrage ?
+          Réponse:
+             Il est essentiel de valider les variables d'environnement pour s'assurer que toutes
+             les configurations nécessaires sont fournies avant le démarrage de l'application.
+             Cela évite des erreurs inattendues ou des comportements imprévisibles.
+          Question:
+             Que se passe-t-il si une variable requise est manquante ?
+             Si une variable d'environnement requise est absente l'application risque de ne pas démarrer
+             correctement, de mal se connecter aux services ou de produire des erreurs pendant l'exécution.
+
+4.3 les questions courseController.js
 
          Question:
-               Pourquoi créer un module séparé pour les connexions aux bases de données ?
+
+            Quelle est la différence entre un contrôleur et une route ?
+
          Réponse:
-               on peut cree tous les connexions dans un seul fichier mais il est plus propre 
-               de les separer pour une meilleur lisibilite et facilite de maintenance
-               aussi l'operation de connexion peut etre coteuse en performance lorsqu'on cree une connexion a chaque fois
-               Si on utilise des connexions multiples on va charger notre processeur en notr memoire .
+               Route :
+                  C'est une configuration qui définit l'URL et la méthode HTTP (GET, POST, etc.)
+                  pour une action spécifique de l'application.Elle détermine quel contrôleur et quelle
+                  fonction doivent être exécutés lorsqu'un utilisateur fait une requête vers cette URL.
+
+               Contrôleur :
+                   C'est un fichier ou un module qui contient la logique métier pour traiter la requête.
+                   Il reçoit les données de la requête.
+
+
 
          Question :
-            Comment gérer proprement la fermeture des connexions ?
-         Réponse : 
-            On doit fermer les connexions lorsqu'on a fini de les utiliser pour liberer les ressources(memorie,cpu)
+            Pourquoi séparer la logique métier des routes ?
+
+         Réponse :
+             Réutilisation : Une même logique métier peut être utilisée dans plusieurs routes ou même
+             dans d'autres parties de l'application, ce qui évite de dupliquer le code et simplifie
+             les évolutions futures

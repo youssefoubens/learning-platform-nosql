@@ -4,26 +4,22 @@
 const express = require('express');
 const config = require('./config/env');
 const db = require('./config/db');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const courseRoutes = require('./routes/courseRoutes');
 
-// const courseRoutes = require('./routes/courseRoutes');
-// const studentRoutes = require('./routes/studentRoutes');
+
 
 const app = express();
 
 async function initialiserConnection() {
   try {
     // Initialize MongoDB connection
-
-    await db.connectMongo
+    await db.connectMongo();
     // Initialize Redis connection
     const redisClient = await db.connectRedis(); 
-
     console.log('Databases connected successfully.');
-    
- 
     app.locals.redis = redisClient;
-
-   
   } catch (error) {
     console.error('Error initializing database connections:', error);
     process.exit(1); // Exit the process if initialization fails
@@ -37,7 +33,12 @@ async function startServer() {
     // TODO: Initialiser les connexions aux bases de données
     await initialiserConnection();
     // TODO: Configurer les middlewares Express
-    // TODO: Monter les routes
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(cors());
+  
+    // Import course routes
+    app.use('/api/courses', courseRoutes);
     // TODO: Démarrer le serveur
     const PORT = process.env.PORT; // Use the port from .env 
     app.listen(PORT, () => {

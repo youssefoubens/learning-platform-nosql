@@ -15,11 +15,11 @@ let mongoClient, redisClient, db;
 
 async function connectMongo(){
   try {
-    mongoClient = new MongoClient(config.mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
+    mongoClient = new MongoClient(config.mongodb.uri);
     // Connexion à MongoDB
     await mongoClient.connect();
     // Sélection de la base de données
-    db = mongoClient.db(config.mongoDbName); 
+    db = mongoClient.db(config.mongodb.dbName); 
 
     console.log('Connexion MongoDB réussie');
     
@@ -29,12 +29,19 @@ async function connectMongo(){
   }
 }
 
+// Getter for the database instance
+function getDb() {
+  if (!db) {
+    throw new Error('Database not initialized. Call connectMongo first.');
+  }
+  return db;
+}
+
 async function connectRedis() {
-  const redisUri = process.env.REDIS_URI; // Load Redis URI from .env
+  const redisUri = config.redis.uri; 
 
-  const redis = require('ioredis'); // Ensure you're using ioredis for connection
+  const redis = require('ioredis'); 
 
-  // Create a Redis client
   const redisClient = new redis(redisUri, {
     retryStrategy(times) {
       const delay = Math.min(times * 50, 2000);
@@ -63,12 +70,12 @@ async function connectRedis() {
   return redisClient; // Return the Redis client
 }
 
-// Export des fonctions et clients
+
 // Export des fonctions et clients
 module.exports = {
   connectMongo,
   connectRedis,
   mongoClient,
   redisClient,
-  db
+  getDb,
 };
