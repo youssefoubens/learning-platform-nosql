@@ -35,6 +35,7 @@ async function insertOne(collectionName, document) {
 
 async function countDocuments(collectionName, query = {}) {
   try {
+    const collection = db.getDb().collection(collectionName);
     const count = await collection.countDocuments(query);
     return count;
   } catch (error) {

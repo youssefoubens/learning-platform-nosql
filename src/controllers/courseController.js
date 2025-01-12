@@ -4,7 +4,7 @@
 // Réponse :
 
 const { ObjectId } = require('mongodb');
-const db = require('../config/db');
+
 const mongoService = require('../services/mongoService');
 const redisService = require('../services/redisService');
 
@@ -12,12 +12,11 @@ async function createCourse(req, res) {
   try {
     const { title, description, instructor, duration, price, category, level } = req.body;
 
-    // Validate required fields
     if (!title || !description || !instructor || !duration || !price || !category || !level) {
       return res.status(400).json({ message: 'All fields are required.' });
     }
 
-    // Create a new course object
+    
     const course = {
       title,
       description,
@@ -29,10 +28,11 @@ async function createCourse(req, res) {
       createdAt: new Date(),
     };
 
-    // Insert the course into the database
+    
     const result = await mongoService.insertOne('courses', course);
 
-    // Respond with the created course
+    await redisService.deleteCachedData('course:stats'); 
+    await redisService.deleteCachedData('course:list'); 
     res.status(201).json({ message: 'Course created successfully.', courseId: result.insertedId });
   } catch (error) {
     console.error('Error creating course:', error);
@@ -47,11 +47,19 @@ async function getCourse(req, res) {
       return res.status(400).json({ message: 'Invalid course ID.' });
     }
 
-    // Retrieve the course from the database
-    const course = await mongoService.findOneById('courses', id);
+    const cacheKey = `course:${id}`;
+
+    let course = await redisService.getCachedData(cacheKey);
 
     if (!course) {
-      return res.status(404).json({ message: 'Course not found.' });
+     
+      course = await mongoService.findOneById('courses', id);
+
+      if (!course) {
+        return res.status(404).json({ message: 'Course not found.' });
+      }
+
+      await redisService.cacheData(cacheKey, course, 3600);
     }
 
     res.status(200).json(course);
@@ -61,17 +69,29 @@ async function getCourse(req, res) {
   }
 }
 
+
 async function getCourseStats(req, res) {
   try {
-    // Example: Get total number of courses
-    const totalCourses = await mongoService.countDocuments('courses', {});
+    const cacheKey = 'course:stats';
+   
+    let stats = await redisService.getCachedData(cacheKey);
 
-    res.status(200).json({ totalCourses });
+    if (!stats) {
+    
+      const totalCourses = await mongoService.countDocuments('courses', {});
+      stats = { totalCourses };
+
+  
+      await redisService.cacheData(cacheKey, stats, 600);
+    }
+
+    res.status(200).json(stats);
   } catch (error) {
     console.error('Error retrieving course stats:', error);
     res.status(500).json({ message: 'Failed to retrieve course stats.', error: error.message });
   }
 }
+
 
 // Export the controllers
 module.exports = {

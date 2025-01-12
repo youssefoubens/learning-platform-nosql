@@ -70,7 +70,7 @@ Le projet est composé de 3 dossiers principaux :
              Si une variable d'environnement requise est absente l'application risque de ne pas démarrer
              correctement, de mal se connecter aux services ou de produire des erreurs pendant l'exécution.
 
-4.3 les questions courseController.js
+    4.3 les questions courseController.js
 
          Question:
 
@@ -95,3 +95,22 @@ Le projet est composé de 3 dossiers principaux :
              Réutilisation : Une même logique métier peut être utilisée dans plusieurs routes ou même
              dans d'autres parties de l'application, ce qui évite de dupliquer le code et simplifie
              les évolutions futures
+
+4.4 les questions de courseRoutes.js
+
+         Question:
+            Pourquoi séparer les routes dans différents fichiers ?
+
+         Réponse:
+            Séparer les routes dans différents fichiers permet de mieux organiser le code et de le rendre
+            plus modulaire et facile à maintenir. Cela permet également de réutiliser les routes dans
+            d'autres parties de l'application ou de les partager entre plusieurs applications.
+
+         Question:
+            Comment organiser les routes de manière cohérente ?
+
+         Réponse:
+           Les routes peuvent être organisées en fonction de leur domaine fonctionnel ou de leur
+           relation logique. Par exemple, toutes les routes liées à la gestion des utilisateurs
+           peuvent être regroupées dans un fichier userRoutes.js, tandis que les routes liées
+           à la gestion des produits peuvent être regroupées dans un fichier productRoutes.js.
