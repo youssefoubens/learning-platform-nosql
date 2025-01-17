@@ -52,7 +52,27 @@ async function startServer() {
 
 // Gestion propre de l'arrêt
 process.on('SIGTERM', async () => {
-  // TODO: Implémenter la fermeture propre des connexions
+  console.log('Received SIGTERM. Closing application gracefully...');
+  try {
+    // Fermer la connexion MongoDB
+    if (db.mongoClient) {
+      await db.mongoClient.close();
+      console.log('MongoDB connection closed.');
+    }
+
+    // Fermer la connexion Redis
+    if (app.locals.redis) {
+      await app.locals.redis.quit();
+      console.log('Redis connection closed.');
+    }
+
+    console.log('All connections closed successfully.');
+    process.exit(0); // Exit gracefully
+  } catch (error) {
+    console.error('Error during graceful shutdown:', error);
+    process.exit(1); // Exit with an error code
+  }
 });
+
 
 startServer();

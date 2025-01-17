@@ -3,23 +3,32 @@
 // Question: Quelles sont les bonnes pratiques pour les clés Redis ?
 // Réponse :
 
-const redisClient = require('../config/db').redisClient;
+const { connectRedis } = require('../config/db');
 
-// Fonction utilitaire pour mettre en cache des données dans Redis
+let redisClient;
+
+// Initialize the Redis client
+async function initializeRedisClient() {
+    if (!redisClient) {
+        redisClient = await connectRedis();
+    }
+    return redisClient;
+}
+
+// Cache data in Redis
 async function cacheData(key, data, ttl) {
     try {
         if (!key || !data) {
             throw new Error('Key and data are required for caching.');
         }
 
-        // Convert data to string for Redis
+        const client = await initializeRedisClient();
         const dataString = JSON.stringify(data);
 
-        // Set data with optional time-to-live (TTL)
         if (ttl) {
-            await redisClient.set(key, dataString, 'EX', ttl);
+            await client.set(key, dataString, 'EX', ttl);
         } else {
-            await redisClient.set(key, dataString);
+            await client.set(key, dataString);
         }
 
         console.log(`Data cached successfully with key: ${key}`);
@@ -29,19 +38,20 @@ async function cacheData(key, data, ttl) {
     }
 }
 
-// Fonction utilitaire pour récupérer des données depuis le cache Redis
+// Retrieve data from Redis cache
 async function getCachedData(key) {
     try {
         if (!key) {
             throw new Error('Key is required to retrieve cached data.');
         }
 
-        const dataString = await redisClient.get(key);
+        const client = await initializeRedisClient();
+        const dataString = await client.get(key);
+
         if (!dataString) {
-            return null; 
+            return null;
         }
 
-        // Parse and return the cached data
         return JSON.parse(dataString);
     } catch (error) {
         console.error('Error retrieving cached data:', error);
@@ -49,14 +59,16 @@ async function getCachedData(key) {
     }
 }
 
-// Fonction utilitaire pour supprimer une clé du cache Redis
+// Delete cached data by key
 async function deleteCachedData(key) {
     try {
         if (!key) {
             throw new Error('Key is required to delete cached data.');
         }
 
-        await redisClient.del(key);
+        const client = await initializeRedisClient();
+        await client.del(key);
+
         console.log(`Data with key: ${key} deleted from cache successfully.`);
     } catch (error) {
         console.error('Error deleting cached data:', error);
@@ -64,14 +76,15 @@ async function deleteCachedData(key) {
     }
 }
 
-// Fonction utilitaire pour vérifier l'existence d'une clé dans le cache Redis
+// Check if a key exists in Redis
 async function isKeyExists(key) {
     try {
         if (!key) {
             throw new Error('Key is required to check existence.');
         }
 
-        const exists = await redisClient.exists(key);
+        const client = await initializeRedisClient();
+        const exists = await client.exists(key);
         return exists === 1;
     } catch (error) {
         console.error('Error checking key existence in cache:', error);
@@ -79,10 +92,9 @@ async function isKeyExists(key) {
     }
 }
 
-// Export des fonctions utilitaires
 module.exports = {
     cacheData,
     getCachedData,
     deleteCachedData,
-    isKeyExists
+    isKeyExists,
 };
